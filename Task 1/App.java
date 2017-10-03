@@ -34,13 +34,10 @@ public class App {
 		String line = null;
 		
 		try {
-			URL url = new URL(adress);
-			
-			InputStreamReader isr = new InputStreamReader(url.openStream());
-			
+			URL url = new URL(adress);			
+			InputStreamReader isr = new InputStreamReader(url.openStream());		
 			BufferedReader br = new BufferedReader(isr);
 			
-                        //Some emails wouldnt return the title line so i added this
                         //to loop through the whole source code and set 'line' to
                         //the line which contains "<title>"
                         
