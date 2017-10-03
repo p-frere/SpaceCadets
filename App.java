@@ -7,10 +7,20 @@ import java.util.Scanner;
 public class App {
 	
 	public String getInitials(String email){
-		int atLocation = email.indexOf("@");    //Get the username from everything before @
-		String username = email.substring(0, atLocation);
-			
-		return username;	
+            String initials = "";
+            int atLocation = email.indexOf("@");    //Get the username from everything before @
+            String username = email.substring(0, atLocation);
+
+            //Loops through the chars in username and add them to the initials until you find a number
+            for(char c : username.toCharArray()){
+                    if(Character.isLetter(c)){
+                            initials += c;
+                    } else {
+                            break;
+                    }
+            }
+
+            return initials;	
 	}
 
 	public String generateURL(String initials){
@@ -28,22 +38,28 @@ public class App {
 			
 			InputStreamReader isr = new InputStreamReader(url.openStream());
 			
-			//cycles through 8 lines
 			BufferedReader br = new BufferedReader(isr);
-			for (int i = 0; i < 8; i++)
-			{
-				br.readLine();
-			}
-			//reads 9th line
-			line = br.readLine();
 			
-			br.close();
+                        //Some emails wouldnt return the title line so i added this
+                        //to loop through the whole source code and set 'line' to
+                        //the line which contains "<title>"
+                        
+                        boolean loop = true;
+                        while(loop){
+                            line = br.readLine();
+                            if(line.contains("<title>")){
+                                loop = false;
+                                break;
+                            }
+                        }
+                        
+                        br.close();
 			isr.close();
 			
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("Something is wrong with the URL");
-		}	
+		}
 		return line;
 	}
 	//extracts name from string of code
@@ -56,17 +72,23 @@ public class App {
 
 	public static void main(String[] args) {
 		
-		Scanner sc = new Scanner(System.in);
-		String input = sc.nextLine();
-		sc.close();
-		
+                System.out.print("Please enter an ECS staff member's email:\t");
+                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                String input = null;
+                try{
+                    input = br.readLine();
+                } catch (IOException e){
+                    System.out.println("Input error...");
+                    System.exit(0);
+                }
+            
 		App app = new App();
 		String initials = app.getInitials(input);
 		String link = app.generateURL(initials);
 		String line = app.getHTML(link);
 		String name = app.getName(line);
 		
-		System.out.println("This e-mail belongs to "+name);
+		System.out.println("This e-mail belongs to: "+name);
 
 	}
 
