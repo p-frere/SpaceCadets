@@ -6,27 +6,14 @@ import java.util.Scanner;
 
 public class App {
 	
-	
-	
 	public String getInitials(String email){
-		String initials = "";
 		int atLocation = email.indexOf("@");    //Get the username from everything before @
 		String username = email.substring(0, atLocation);
-		
-		//Loops through the chars in username and add them to the initials until you find a number
-		for(char c : username.toCharArray()){
-			if(Character.isLetter(c)){
-				initials += c;
-			} else {
-				break;
-			}
-		}
-	   
-		return initials;
+			
+		return username;	
 	}
 
 	public String generateURL(String initials){
-		//Concatanate the default link and initials
 		String link = "http://www.ecs.soton.ac.uk/people/" + initials;		
 		return link; 
 	}
@@ -40,18 +27,14 @@ public class App {
 			URL url = new URL(adress);
 			
 			InputStreamReader isr = new InputStreamReader(url.openStream());
-			/*LineNumberReader br = new LineNumberReader(isr);
 			
-			br.setLineNumber(8);
-			line = br.readLine();
-			
-			System.out.println(line);
-			*/
+			//cycles through 8 lines
 			BufferedReader br = new BufferedReader(isr);
 			for (int i = 0; i < 8; i++)
 			{
 				br.readLine();
 			}
+			//reads 9th line
 			line = br.readLine();
 			
 			br.close();
@@ -63,7 +46,7 @@ public class App {
 		}	
 		return line;
 	}
-	
+	//extracts name from string of code
 	public String getName(String line) {
 		int end = line.indexOf("|");
 		int start = line.indexOf(">");
@@ -73,11 +56,8 @@ public class App {
 
 	public static void main(String[] args) {
 		
-		
-		
 		Scanner sc = new Scanner(System.in);
 		String input = sc.nextLine();
-		System.out.println(input);
 		sc.close();
 		
 		App app = new App();
@@ -86,11 +66,12 @@ public class App {
 		String line = app.getHTML(link);
 		String name = app.getName(line);
 		
-		System.out.println(name);
+		System.out.println("This e-mail belongs to "+name);
 
 	}
 
 }
 
 //By Phoebe Frere and Alex Shaw
+
 
