@@ -1,0 +1,119 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Stack;
+import java.util.StringTokenizer;
+
+public class App {
+
+	HashMap<String, Integer> map = new HashMap<String, Integer>();
+
+	Stack stack;
+
+	public static void main(String[] args) throws IOException {
+		App app = new App();
+		app.getInput();
+
+		System.out.println();
+		app.getTotals();
+
+	}
+
+	public void incr(String var) {
+		map.put(var, map.get(var) + 1);
+		System.out.println("incr " + var);
+	}
+
+	public void decr(String var) {
+		map.put(var, map.get(var) - 1);
+		System.out.println("decr " + var);
+	}
+
+	public void clear(String var) {
+		map.put(var, 0);
+		System.out.println("clear " + var);
+	}
+
+	public void getInput() throws IOException {
+		List<String> code = new ArrayList<String>();
+		String line;
+		BufferedReader br = new BufferedReader(new FileReader("text.txt"));
+		line = br.readLine();
+		while (line != null) {
+			code.add(line);
+			line = br.readLine();
+		}
+		br.close();
+
+		tokenize(code);
+	}
+
+	public void getTotals() {
+		System.out.println(map.keySet());
+		System.out.println(map.values());
+	}
+
+	public void tokenize(List<String> code) {
+
+		String line;
+		int count = 0;
+		Stack<Integer> stack = new Stack<Integer>();
+		Stack<String> stackVar = new Stack<String>();
+
+		while (count != code.size()) {
+
+			line = code.get(count);
+			StringTokenizer st = new StringTokenizer(line);
+			List<String> commands = new ArrayList<String>();
+
+			while (st.hasMoreTokens()) {
+				commands.add(st.nextToken());
+			}
+
+			switch (commands.get(0)) {
+			case "incr":
+				incr(commands.get(1));
+				break;
+
+			case "decr":
+				decr(commands.get(1));
+				break;
+
+			case "clear":
+				clear(commands.get(1));
+				break;
+
+			case "while":
+				stack.push(count);
+				stackVar.push(commands.get(1) + ";");
+				System.out.println("pushed " + count + " and " + (commands.get(1) + ";"));
+
+				break;
+
+			case "end;":
+				if (map.get(stackVar.peek()) == 0) {
+					System.out.println("value in stack is equal to 0");
+					stackVar.pop();
+					stack.pop();
+				} else {
+					count = stack.peek() - 1;
+					System.out.println("Repeating loop");
+				}
+				break;
+
+			default:
+				System.out.println("Syntax Error");
+				break;
+			}
+
+			count++;
+		}
+	}
+}
+
+// By Phoebe Frere
+// pls don't read, really bad, did it in a Pro dev lecture
+// k thanks
