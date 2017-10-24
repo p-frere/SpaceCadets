@@ -1,59 +1,113 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 import java.util.StringTokenizer;
 
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+
 public class App {
 
 	HashMap<String, Integer> map = new HashMap<String, Integer>();
-
 	Stack stack;
+	JTextArea bareBonesTxt;
+	JTextArea console;
+	JLabel errorLbl;
+	StringBuilder sb = new StringBuilder();
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) {
 		App app = new App();
-		app.getInput();
+		app.initGUI();
 
-		System.out.println();
-		app.getTotals();
+	}
+
+	public void initGUI() {
+		JFrame frame = new JFrame("Barebones to Java interpreter");
+		JPanel panel = new JPanel();
+
+		frame.add(panel);
+		frame.setSize(1000, 450);
+		frame.setResizable(true);
+		frame.setLocationRelativeTo(null);
+
+		JButton btn = new JButton("Interpret");
+		console = new JTextArea("", 20, 40);
+		bareBonesTxt = new JTextArea("", 20, 40);
+		errorLbl = new JLabel("There is an error in the code, please try agian");
+		JLabel l = new JLabel("Enter the barebones code you want to ");
+
+		panel.add(bareBonesTxt);
+		panel.add(console);
+		panel.add(l);
+		panel.add(btn);
+		panel.add(errorLbl);
+		errorLbl.setVisible(false);
+		// -----------------------
+
+		btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("button pressed");
+				errorLbl.setVisible(false);
+				console.setText("");
+				getInput();
+
+			}
+		});
+
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
 
 	}
 
 	public void incr(String var) {
 		map.put(var, map.get(var) + 1);
-		System.out.println("incr " + var);
+		addText("increasing  " + var);
 	}
 
 	public void decr(String var) {
 		map.put(var, map.get(var) - 1);
-		System.out.println("decr " + var);
+		addText("decreasing " + var);
 	}
 
 	public void clear(String var) {
 		map.put(var, 0);
-		System.out.println("clear " + var);
+		System.out.println("clearing " + var);
+		addText("clearing " + var);
 	}
 
-	public void getInput() throws IOException {
-		List<String> code = new ArrayList<String>();
-		String line;
-		BufferedReader br = new BufferedReader(new FileReader("text.txt"));
-		line = br.readLine();
-		while (line != null) {
-			code.add(line);
-			line = br.readLine();
-		}
-		br.close();
+	public void addText(String text) {
+		sb.append(text + "\n");
+		console.setText(sb.toString());
+	}
 
-		tokenize(code);
+	public void getInput() {
+		List<String> code = new ArrayList<String>();
+		for (String line : bareBonesTxt.getText().split("\\n")) {
+			code.add(line);
+		}
+
+		try {
+			tokenize(code);
+		} catch (Exception e) {
+			errorLbl.setVisible(true);
+		}
+
+		System.out.println();
+		getTotals();
 	}
 
 	public void getTotals() {
 		System.out.println(map.keySet());
 		System.out.println(map.values());
+		addText(map.keySet().toString());
+		addText(map.values().toString());
 	}
 
 	public void tokenize(List<String> code) {
@@ -106,6 +160,7 @@ public class App {
 
 			default:
 				System.out.println("Syntax Error");
+				errorLbl.setVisible(true);
 				break;
 			}
 
