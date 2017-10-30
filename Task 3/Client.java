@@ -13,109 +13,117 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class Client {
-	
-	JTextArea console;
+
+	JTextArea textSubmit;
 	JTextArea chat;
 	JTextField usernameTxt;
 	Socket socket = null;
 	String name = "test";
-	
-	
+
 	public static void main(String[] args) throws IOException {
-		
+
 		System.out.println("Client Started");
-		
+
 		Client client = new Client();
 		client.initGUI();
-		client.login();
 		client.initSocket();
 	}
-	
-	public void login() {
-		name = Long.toString(System.currentTimeMillis());
-	}
-	
-	public void initSocket() throws IOException {	
+
+	// Client Setup
+	public void initSocket() throws IOException {
 		try {
 			socket = new Socket("127.0.0.1", 1342);
 		} catch (IOException e) {
-			print("socket thing");
+			print("Error with Socket");
 			System.out.println("socket delceration error");
 			e.printStackTrace();
-		}	
-				
-		//accepting something from the server	
+		}
+
+		// accepting something from the server
 		Scanner serverScanner = new Scanner(socket.getInputStream());
 		String temp;
-		
-		while(true) {
+
+		// prints input stream to chat
+		while (true) {
 			temp = serverScanner.nextLine();
-			print("\n"+temp);
+			print("\n" + temp);
 		}
 	}
-	
+
+	// sends submitted text to server
 	public void Send() {
 		String text = read();
-		
-		//passes to the server
+
+		// passes to the server with the username
 		PrintStream ps;
 		try {
 			ps = new PrintStream(socket.getOutputStream());
-			ps.println(getName() + ": "+text);
+			ps.println(getName() + ": " + text);
 			clear();
-			
+
 		} catch (IOException e) {
 			print("stream thing");
 			System.out.println("error in print stream");
 			e.printStackTrace();
-		}	
+		}
 	}
-		
-	//Creates GUI
+
+	// Creates GUI
 	public void initGUI() {
 		JFrame frame = new JFrame("Client");
 		JPanel panel = new JPanel();
-		
+
 		frame.add(panel);
-		frame.setSize(500,600);
+		frame.setSize(500, 600);
 		frame.setResizable(true);
 		frame.setLocationRelativeTo(null);
-		
+
 		JButton sendBtn = new JButton("Send");
 		JLabel l = new JLabel("CLIENT");
-		chat = new JTextArea("",20,30);
-		console = new JTextArea("", 10,30);
+		chat = new JTextArea("", 20, 30);
+		textSubmit = new JTextArea("", 10, 30);
 		usernameTxt = new JTextField(6);
-		
-		//Sets Action for submit button 
-	    sendBtn.addActionListener(new ActionListener() {
-	    	public void actionPerformed(ActionEvent e) {
-	            Send();
-	         }          
-	      });
-	    
-	    panel.add(l);
-	    panel.add(usernameTxt);
-	    panel.add(chat);
-	    panel.add(console);
-	    panel.add(sendBtn);	
-	    
-	    frame.setVisible(true);
+
+		// Sets Action for submit button
+		sendBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Send();
+			}
+		});
+
+		panel.add(l);
+		panel.add(usernameTxt);
+		panel.add(chat);
+		panel.add(textSubmit);
+		panel.add(sendBtn);
+
+		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
-	
+
+	// clears textbox
 	public String read() {
-		return console.getText();
+		return textSubmit.getText();
 	}
+
+	// clears textSubmit
 	public void clear() {
-		console.setText("");
+		textSubmit.setText("");
 	}
+
+	// prints to chat
 	public void print(String text) {
 		chat.append(text);
 	}
+
+	// gets username
 	public String getName() {
-		return usernameTxt.getText();
+		if (!usernameTxt.getText().isEmpty()) {
+			return usernameTxt.getText();
+		} else {
+			// returns unique string of numbers if no username
+			return Long.toString(System.currentTimeMillis());
+		}
 	}
-	
-	
+
 }

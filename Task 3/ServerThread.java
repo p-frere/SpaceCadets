@@ -11,11 +11,13 @@ public class ServerThread extends Thread {
 	Socket socket;
 	JTextArea console;
 	
+	//Setup
 	public ServerThread(Socket socket) {
 		this.socket = socket;
 		Server.addUser(this);
 	}
 	
+	//Accepts content from the user
 	public void run() {
 		String input;
 		BufferedReader br;
@@ -37,6 +39,7 @@ public class ServerThread extends Thread {
 		
 	}
 	
+	//Sends a message back to the user
 	public void broadcast(String text) throws IOException {
 		PrintStream printStream = new PrintStream(socket.getOutputStream());
 		printStream.println(text);

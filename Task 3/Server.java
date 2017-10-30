@@ -13,41 +13,37 @@ public class Server {
 	int PORT = 1342;
 	static JTextArea console;
 	Socket socket = null;
+	//keeps track of number of users
 	static ArrayList<ServerThread> userlist = new ArrayList<ServerThread>();
 
 	public static void main(String[] args) throws IOException {
-			
+		
 		Server server = new Server();
 		server.initGUI();
 		server.initSocket();
 				
 	}
 	
+	//adds another user
 	public static void addUser(ServerThread st) {
 		userlist.add(st);
 	}
 	
-	/*public void read() throws IOException {
-		String text;
-		Scanner sc = new Scanner(socket.getInputStream());
-		text = sc.nextLine();
-		
-		print(text);
-		
-	}*/
-	
+	//server setup
 	public void initSocket() throws IOException {
 		ServerSocket serverSocket = new ServerSocket(PORT);
 		print("Server Started");
 		
 		while (true) {
 			//server listens for connections
-			socket = serverSocket.accept();		
+			socket = serverSocket.accept();	
+			//accepts connection and creates new thread for user
+			//start() calls the run() method on a new thread
 			new ServerThread(socket).start();		
 		}
-		
 	}
 	
+	//GUI
 	public void initGUI() {
 		JFrame frame = new JFrame("Server");
 		JPanel panel = new JPanel();
@@ -67,8 +63,10 @@ public class Server {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
+	//prints to all console and all users
 	public static void print(String text) {
 		console.append("\n"+text);
+		//for all threads, send the message back
 		for(ServerThread st : userlist){
             try {
 				st.broadcast(text);
